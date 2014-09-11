@@ -24,7 +24,7 @@ function showTest() {
 function test(email) {
    if (!filter)
        return '<i>...loading...</i>';
-    if (!email)
+    if (!email || email.length < 6)
         return '<i>Enter e-mail address</i>';
     var k = filter[0];
     var result = 1;
