@@ -2,16 +2,39 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <getopt.h>
 #include "bloom.h"
+
+/* Normalizes according to gmail's rules, not an RFC. */
+static void email_normalize(char *email)
+{
+    bool domain = false;
+    while (*email) {
+        if (isspace(*email) || (!domain && *email == '.')) {
+            memmove(email, email + 1, strlen(email + 1) + 1);
+        } else if (!domain && *email == '+') {
+            char *p = email;
+            while (*p && *p != '@') p++;
+            memmove(email, p, strlen(p) + 1);
+        } else if (*email == '@') {
+            domain = true;
+            email++;
+        } else {
+            *email = tolower(*email);
+            email++;
+        }
+    }
+}
 
 static void filter_fill(struct bloom *filter, FILE *in)
 {
     char line[128];
     while (!feof(stdin)) {
         if (fgets(line, sizeof(line), in)) {
-            line[strlen(line) - 1] = '\0';
-            bloom_insert(filter, line);
+            email_normalize(line);
+            if (*line)
+                bloom_insert(filter, line);
         }
     }
 }
@@ -55,8 +78,13 @@ int main(int argc, char **argv)
         bloom_load(&filter, dumpfile);
         printf("m=%zu (%.0f kB), k=%d\n",
                filter.nbits, filter.nbytes / 1024.0, filter.k);
-        for (int i = optind; i < argc; i++)
-            printf("%s => %d\n", argv[i], bloom_test(&filter, argv[i]));
+        for (int i = optind; i < argc; i++) {
+            char email[128];
+            snprintf(email, sizeof(email), "%s", argv[i]);
+            email_normalize(email);
+            printf("%s => %s\n", email,
+                   bloom_test(&filter, email) ? "leaked" : "safe");
+        }
     }
 
     bloom_destroy(&filter);
