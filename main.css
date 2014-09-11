@@ -1,0 +1,53 @@
+body {
+    font-family: sans-serif;
+    background: #ddf;
+}
+
+h1 {
+    text-align: center;
+    color: #222;
+}
+
+#email {
+    width: 500px;
+    height: 40px;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 24px;
+    display: block;
+    font-weight: bold;
+}
+
+#output {
+    text-align: center;
+    font-size: 20px;
+    background: lightblue;
+    width: 500px;
+    margin: 0 auto;
+    padding: 5px 0;
+}
+
+p.description {
+    width: 500px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 14px;
+}
+
+p.privacy {
+    width: 500px;
+    margin: 10px auto;
+    text-align: justify;
+    font-size: 12px;
+}
+
+p.repo {
+    width: 500px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 14px;
+}
+
+.warn {
+    color: #d00;
+}

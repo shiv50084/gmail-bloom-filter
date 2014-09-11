@@ -1,28 +1,38 @@
-document.querySelector('#email').addEventListener('keyup', function() {
-    document.querySelector('#output').innerHTML = test(this.value);
-});
+document.querySelector('#email').addEventListener('keyup', showTest);
+document.querySelector('#email').addEventListener('click', showTest);
+document.querySelector('#email').addEventListener('onpaste', showTest);
 
 var filter = null;
 (function() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
         filter = new Uint8Array(xhr.response);
+        showTest();
     };
     xhr.open('get', 'filter.bloom', true);
     xhr.responseType = 'arraybuffer';
     xhr.send();
+    showTest();
 }());
+
+function showTest() {
+    document.querySelector('#output').innerHTML = test(this.value);
+}
 
 function test(email) {
    if (!filter)
-       return '?';
+       return '<i>...loading...</i>';
+    if (!email)
+        return '<i>Enter e-mail address</i>';
     var k = filter[0];
     var result = 1;
     for (var i = 0; i < k; i++) {
         var n = email.fletcher32(i) & (((filter.length - 1) * 8) - 1);
         result &= filter[Math.floor(n / 8) + 1] >> (n % 8);
     }
-    return result;
+    return result === 0 ?
+        'This address is unlisted.' :
+        '<span class="warn">This address was <b>leaked</b>!</span>';
 }
 
 var SEEDS = [
