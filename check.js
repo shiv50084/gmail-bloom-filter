@@ -12,7 +12,7 @@ function normalize(email) {
     if (email == null) return "";
     var parts = email.split(/@/);
     if (parts.length < 2) return email;
-    parts[0] = parts[0].replace(/\+[^@]*@/, '@').replace(/[. ]/, '');
+    parts[0] = parts[0].replace(/\+[^@]*$/, '').replace(/[. ]/g, '');
     return parts[0].toLowerCase() + '@' + parts[1].toLowerCase();
 }
 
