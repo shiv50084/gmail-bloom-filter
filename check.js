@@ -4,6 +4,18 @@ document.querySelector('#email').addEventListener('paste', showTest);
 document.querySelector('#email').addEventListener('blur', showTest);
 document.querySelector('#email').addEventListener('focus', showTest);
 
+function isEmail(string) {
+    return Boolean(/[^@]+@[^.]+\.[^.]+/.exec(string));
+}
+
+function normalize(email) {
+    if (email == null) return "";
+    var parts = email.split(/@/);
+    if (parts.length < 2) return email;
+    parts[0] = parts[0].replace(/\+[^@]*@/, '@').replace(/[. ]/, '');
+    return parts[0].toLowerCase() + '@' + parts[1].toLowerCase();
+}
+
 var filter = null;
 (function() {
     var xhr = new XMLHttpRequest();
@@ -23,8 +35,9 @@ function showTest() {
 
 function test(email) {
    if (!filter)
-       return '<i>...loading...</i>';
-    if (!email || email.length < 6)
+       return '<i>... loading ...</i>';
+    email = normalize(email);
+    if (!isEmail(email))
         return '<i>Enter e-mail address</i>';
     var k = filter[0];
     var result = 1;
