@@ -22,6 +22,4 @@ int     bloom_test(const struct bloom *f, const char *value);
 void    bloom_insert(struct bloom *f, const char *value);
 double  bloom_error_rate(const struct bloom *f);
 
-uint32_t fletcher32(const uint16_t *data, size_t words);
-
 #endif

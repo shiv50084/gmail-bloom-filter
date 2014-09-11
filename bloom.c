@@ -11,8 +11,8 @@ uint16_t SEEDS[] = {
     0x0596, 0x62dc, 0x11bf, 0x3aef, 0x86d4, 0xac08, 0xa350, 0x9a1c, 0xced5,
 };
 
-uint32_t fletcher32(const uint16_t *data, size_t words) {
-    uint32_t sum1 = 0xffff, sum2 = 0xffff;
+uint32_t fletcher32(const uint16_t *data, size_t words, int n) {
+    uint32_t sum1 = SEEDS[n * 2], sum2 = SEEDS[n * 2 + 1];
     while (words) {
         unsigned tlen = words > 360 ? 360 : words;
         words -= tlen;
@@ -91,11 +91,9 @@ int bloom_test(const struct bloom *f, const char *value)
 {
     int result = 1;
     size_t length = strlen(value);
-    uint16_t key[length / 2 + 2];
-    strcpy((char *) (key + 1), value);
     for (int i = 0; i < f->k; i++) {
-        key[0] = SEEDS[i];
-        uint32_t hash = fletcher32(key, (length + 2) / 2);
+        uint32_t hash =
+            fletcher32((const uint16_t *) value, (length + 1) / 2, i);
         result &= bloom_get(f, hash & (f->nbits - 1));
     }
     return result;
@@ -104,11 +102,9 @@ int bloom_test(const struct bloom *f, const char *value)
 void bloom_insert(struct bloom *f, const char *value)
 {
     size_t length = strlen(value);
-    uint16_t key[length / 2 + 2];
-    strcpy((char *) (key + 1), value);
     for (int i = 0; i < f->k; i++) {
-        key[0] = SEEDS[i];
-        uint32_t hash = fletcher32(key, (length + 2) / 2);
+        uint32_t hash =
+            fletcher32((uint16_t *) value, (length + 1) / 2, i);
         bloom_set(f, hash & (f->nbits - 1));
     }
     f->n++;
