@@ -1,6 +1,8 @@
 document.querySelector('#email').addEventListener('keyup', showTest);
 document.querySelector('#email').addEventListener('click', showTest);
 document.querySelector('#email').addEventListener('paste', showTest);
+document.querySelector('#email').addEventListener('blur', showTest);
+document.querySelector('#email').addEventListener('focus', showTest);
 
 var filter = null;
 (function() {
