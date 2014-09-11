@@ -84,7 +84,7 @@ void bloom_set(struct bloom *f, size_t n)
 int bloom_get(const struct bloom *f, size_t n)
 {
     size_t byte = n / 8, bit = n % 8;
-    return (f->bits[byte] >> bit) && 1;
+    return (f->bits[byte] >> bit) & 1;
 }
 
 int bloom_test(const struct bloom *f, const char *value)
